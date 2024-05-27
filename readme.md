@@ -1,3 +1,27 @@
+# Setup
+## Install
+
+### Install redis
+```shell
+brew install redis
+```
+
+### Install redis client tool
+Another redis desktop manager
+
+### Add jedis dependency
+https://mvnrepository.com/artifact/redis.clients/jedis/5.1.3
+```xml
+<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+<dependency>
+    <groupId>redis.clients</groupId>
+    <artifactId>jedis</artifactId>
+    <version>5.1.3</version>
+</dependency>
+```
+
+## Use jedis
+```java
 package com.redis.demo;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -37,3 +61,4 @@ public class DemoApplication {
 		jedisPool.close();
 	}
 }
+```
