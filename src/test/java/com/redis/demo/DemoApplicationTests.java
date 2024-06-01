@@ -28,7 +28,19 @@ class DemoApplicationTests extends BaseTest{
 	void test2() {
 		String key = "lockKey";
 		String value = UUID.randomUUID().toString();
-		myDistributionLock.lock(key, value, 100 * 1000);
+		myDistributionLock.lock(key, value, (100L * 1000L));
+	}
+
+	@Test
+	void test3() {
+		String key = "lockKey";
+		String value = UUID.randomUUID().toString();
+		boolean result = myDistributionLock.tryLock(key, value, (100L * 1000L));
+		System.out.println("first time lock result = " + result);
+
+		boolean result2 = myDistributionLock.tryLock("wahaha", value, (100L * 1000L));
+		System.out.println("second time lock result = " + result2);
+
 	}
 
 }
