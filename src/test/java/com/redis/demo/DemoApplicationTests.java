@@ -57,4 +57,19 @@ class DemoApplicationTests extends BaseTest{
 		boolean secondLock = myDistributionLock.tryLock(key, value, 10 * 1000, 10 * 1000);
 		System.out.println("secondLock = " + secondLock);
 	}
+
+	@Test
+	void test5() {
+		String key = "unlock";
+		String value = UUID.randomUUID().toString();
+
+		// lock
+		myDistributionLock.lock(key, value, 30 * 1000);
+
+		// first unlock with different value > NG
+		myDistributionLock.unlock(key, UUID.randomUUID().toString());
+
+		// second unlock with same value > OK
+		myDistributionLock.unlock(key, value);
+	}
 }

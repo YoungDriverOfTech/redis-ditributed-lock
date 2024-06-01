@@ -2,8 +2,12 @@ package com.redis.demo.lock;
 
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
@@ -63,4 +67,18 @@ public class MyDistributionLock {
             LockSupport.parkNanos(this, TimeUnit.MICROSECONDS.toNanos(1000));
         }
     }
+
+    // Compare value to prevent wrong lock
+    // Using lua script to ensure unlock atomic (Regard compare value and delete value as one action)
+    public void unlock(String key, String value) {
+        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+        RedisScript<Long> redisScript = new DefaultRedisScript<>(script, Long.class);
+        Long result = redisTemplate.execute(redisScript, Collections.singletonList(key), value);
+        if (Objects.equals(1L, result)) {
+            System.out.println("release lock OK");
+        } else {
+            System.out.println("release lock NG");
+        }
+    }
+
 }
