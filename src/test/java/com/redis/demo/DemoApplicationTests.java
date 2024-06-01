@@ -43,4 +43,18 @@ class DemoApplicationTests extends BaseTest{
 
 	}
 
+	@Test
+	void test4() {
+		String key = "tryLock2";
+		String value = UUID.randomUUID().toString();
+		myDistributionLock.lock(key, value, 10 * 1000);
+
+		// Get lock and wait time is 5s
+		boolean firstLock = myDistributionLock.tryLock(key, value, 10 * 1000, 5 * 1000);
+		System.out.println("firstLock = " + firstLock);
+
+		// Get lock and wait time is 10s
+		boolean secondLock = myDistributionLock.tryLock(key, value, 10 * 1000, 10 * 1000);
+		System.out.println("secondLock = " + secondLock);
+	}
 }

@@ -17,7 +17,7 @@ public class MyDistributionLock {
         // self rotate
         while (true) {
             System.out.println("Normal Lock: Trying to get lock");
-            if (Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent(key, value, expireTime, TimeUnit.SECONDS))) {
+            if (Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent(key, value, expireTime, TimeUnit.MILLISECONDS))) {
                 System.out.println("Normal Lock: Got lock success");
                 return;
             } else {
@@ -32,12 +32,35 @@ public class MyDistributionLock {
     public boolean tryLock(String key, String value, long expireTime) {
         // self rotate
         System.out.println("TryLock: Trying to get lock");
-        if (Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent(key, value, expireTime, TimeUnit.SECONDS))) {
+        if (Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent(key, value, expireTime, TimeUnit.MILLISECONDS))) {
             System.out.println("TryLock: Got lock success");
             return true;
         } else {
             System.out.println("TryLock: Got lock failed");
             return false;
+        }
+    }
+
+    public boolean tryLock(String key, String value, long expireTime, long waitTime) {
+        long start = System.currentTimeMillis();
+
+        while (true) {
+            // self rotate
+            System.out.println("TryLock: Trying to get lock");
+            if (Boolean.TRUE.equals(redisTemplate.opsForValue().setIfAbsent(key, value, expireTime, TimeUnit.MILLISECONDS))) {
+                System.out.println("TryLock: Got lock success");
+                return true;
+            } else {
+                System.out.println("TryLock: Got lock failed, wait next time to get lock");
+            }
+
+            // check wait time is over or not
+            if (System.currentTimeMillis() - start > waitTime) {
+                System.out.println("wait time is too long, get lock failed");
+                return false;
+            }
+            // blocked for a while
+            LockSupport.parkNanos(this, TimeUnit.MICROSECONDS.toNanos(1000));
         }
     }
 }
