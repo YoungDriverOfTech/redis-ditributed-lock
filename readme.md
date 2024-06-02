@@ -129,6 +129,8 @@ public class RedisConfig {
 
 # Distribution lock
 ## lock implement
+
+[实现类](src/main/java/com/redis/demo/lock/MyDistributionLock.java)
 ```java
 package com.redis.demo.lock;
 
@@ -217,6 +219,8 @@ public class MyDistributionLock {
 ```
 
 ## How to use
+
+[使用](src/main/java/com/redis/demo/service/MyService.java)
 ```java
 package com.redis.demo.service;
 
